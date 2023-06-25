@@ -1,5 +1,5 @@
-
 IMAGE=xylifyx/buildx
+MSG=$(shell date)
 
 all: clean run
 
@@ -9,7 +9,11 @@ clean:
 
 build.log: Dockerfile
 	docker rmi -f $(IMAGE)
-	docker buildx build -t $(IMAGE) --load --platform linux/arm64 . >build.log
+	docker buildx build \
+		--build-arg "MSG=$(MSG)" \
+		--push -t $(IMAGE) \
+		--platform linux/arm64,linux/amd64 \
+		. >build.log
 
 build: build.log
 
@@ -17,4 +21,5 @@ push: build
 	docker push $(IMAGE)
 
 run: build
-	docker run --rm $(IMAGE)
+	docker run --platform arm64 --rm $(IMAGE)
+	docker run --platform amd64 --rm $(IMAGE)
