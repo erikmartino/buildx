@@ -20,6 +20,9 @@ build: build.log
 push: build
 	docker push $(IMAGE)
 
-run: build
+run: bake
 	docker run --platform arm64 --rm $(IMAGE)
 	docker run --platform amd64 --rm $(IMAGE)
+
+bake: Dockerfile
+	docker buildx bake --push
